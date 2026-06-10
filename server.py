@@ -1,11 +1,11 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, send_file
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import os
 import json
 from datetime import datetime
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='.')
 CORS(app)
 
 UPLOAD_FOLDER = 'uploads'
@@ -39,37 +39,42 @@ def index():
     <h1>Banner Imprint Server</h1>
     <p>Server is running!</p>
     <ul>
+        <li><a href="/banner_order.html">صفحة الطلبات</a></li>
         <li>POST /api/order - Submit new order</li>
         <li>GET /api/orders - View all orders</li>
         <li>GET /uploads/&lt;filename&gt; - View image</li>
     </ul>
     """
 
+@app.route('/banner_order.html')
+def serve_html():
+    return send_file('banner_order.html')
+
 @app.route('/api/order', methods=['POST'])
 def create_order():
     try:
         if 'image' not in request.files:
             return jsonify({"success": False, "error": "No image uploaded"}), 400
-
+        
         file = request.files['image']
         if file.filename == '':
             return jsonify({"success": False, "error": "No file selected"}), 400
-
+        
         if not allowed_file(file.filename):
             return jsonify({"success": False, "error": "Invalid file type"}), 400
-
+        
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         original_filename = secure_filename(file.filename)
         filename = f"{timestamp}_{original_filename}"
         filepath = os.path.join(UPLOAD_FOLDER, filename)
         file.save(filepath)
-
+        
         phone = request.form.get('phone', '')
         transaction_id = request.form.get('transaction_id', '')
-
+        
         host = request.host_url.rstrip('/')
         image_url = f"{host}/uploads/{filename}"
-
+        
         order_data = {
             "id": timestamp,
             "phone": phone,
@@ -80,15 +85,15 @@ def create_order():
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "status": "new"
         }
-
+        
         save_order(order_data)
-
+        
         return jsonify({
             "success": True,
             "message": "Order received successfully!",
             "order": order_data
         }), 200
-
+        
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
