@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>طباعة اللوحات الإعلانية - Banner Imprint</title>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap");
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Cairo", sans-serif; -webkit-tap-highlight-color: transparent; }
+        :root { --primary: #22c55e; --primary-dark: #16a34a; --accent: #f59e0b; --accent-light: #fbbf24; --pink: #ec4899; --dark: #0f172a; }
+        body { background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #fefce8 100%); min-height: 100vh; color: #1e293b; }
+        .container { max-width: 600px; margin: 0 auto; padding: 16px; }
+        .header { text-align: center; padding: 24px 16px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border-radius: 24px; margin-bottom: 20px; box-shadow: 0 10px 40px rgba(34, 197, 94, 0.3); position: relative; overflow: hidden; }
+        .header::before { content: ""; position: absolute; top: -50%; right: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); animation: rotate 20s linear infinite; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .logo-img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: 0 4px 20px rgba(0,0,0,0.15); margin: 0 auto 12px; position: relative; z-index: 1; background: white; }
+        .header h1 { color: white; font-size: 22px; font-weight: 900; position: relative; z-index: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .header p { color: rgba(255,255,255,0.9); font-size: 14px; margin-top: 4px; position: relative; z-index: 1; }
+        .card { background: rgba(255,255,255,0.95); border-radius: 20px; padding: 24px; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid rgba(0,0,0,0.04); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+        .card-title { font-size: 18px; font-weight: 800; color: var(--dark); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+        .card-title .icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
+        .service-item { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #bbf7d0; border-radius: 14px; padding: 16px 8px; text-align: center; transition: all 0.3s ease; cursor: pointer; }
+        .service-item:hover { transform: scale(1.05); border-color: var(--primary); box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2); }
+        .service-item .emoji { font-size: 32px; margin-bottom: 6px; display: block; }
+        .service-item span { font-weight: 700; font-size: 14px; color: var(--primary-dark); }
+        .upload-area { border: 3px dashed var(--primary); border-radius: 20px; padding: 40px 20px; text-align: center; background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden; }
+        .upload-area:hover { border-color: var(--accent); background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%); transform: scale(1.02); }
+        .upload-area.dragover { border-color: var(--pink); background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%); transform: scale(1.05); }
+        .upload-area .upload-icon { font-size: 56px; margin-bottom: 12px; display: block; }
+        .upload-area h3 { font-size: 18px; font-weight: 800; color: var(--primary-dark); margin-bottom: 6px; }
+        .upload-area p { color: #64748b; font-size: 13px; }
+        .upload-area .file-types { display: inline-block; background: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; color: #64748b; margin-top: 8px; border: 1px solid #e2e8f0; }
+        #fileInput { display: none; }
+        .preview-container { margin-top: 16px; display: none; }
+        .preview-container.active { display: block; }
+        .preview-img { width: 100%; max-height: 300px; object-fit: contain; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+        .preview-info { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding: 10px 16px; background: #f0fdf4; border-radius: 12px; }
+        .preview-info span { font-size: 13px; color: var(--primary-dark); font-weight: 700; }
+        .remove-file { background: #fee2e2; color: #dc2626; border: none; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .remove-file:hover { background: #fecaca; }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-weight: 700; font-size: 14px; color: var(--dark); margin-bottom: 8px; }
+        .form-input { width: 100%; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 16px; transition: all 0.3s ease; background: white; text-align: right; }
+        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1); }
+        .form-input::placeholder { color: #94a3b8; }
+        .deposit-box { background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%); border: 2px solid var(--accent-light); border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 16px; }
+        .deposit-amount { font-size: 36px; font-weight: 900; color: var(--accent); text-shadow: 0 2px 10px rgba(245, 158, 11, 0.3); }
+        .deposit-label { font-size: 14px; color: #92400e; font-weight: 700; margin-top: 4px; }
+        .deposit-note { font-size: 12px; color: #a16207; margin-top: 8px; line-height: 1.6; }
+        .wallet-info { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #bbf7d0; border-radius: 14px; padding: 16px; text-align: center; margin-bottom: 16px; }
+        .wallet-info .wallet-icon { font-size: 40px; margin-bottom: 8px; }
+        .wallet-info h4 { font-size: 16px; font-weight: 800; color: var(--primary-dark); margin-bottom: 4px; }
+        .wallet-info .wallet-number { font-size: 24px; font-weight: 900; color: var(--accent); letter-spacing: 1px; }
+        .wallet-info .wallet-name { font-size: 13px; color: #64748b; margin-top: 4px; }
+        .submit-btn { width: 100%; padding: 18px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; border-radius: 16px; font-size: 18px; font-weight: 900; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 30px rgba(34, 197, 94, 0.4); display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(34, 197, 94, 0.5); }
+        .submit-btn:active { transform: scale(0.98); }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .info-section { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-radius: 20px; padding: 24px; margin-bottom: 16px; border: 1px solid #a7f3d0; }
+        .info-section h3 { font-size: 18px; font-weight: 800; color: var(--primary-dark); margin-bottom: 12px; text-align: center; }
+        .info-list { list-style: none; }
+        .info-list li { padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 10px; font-size: 14px; color: #334155; }
+        .info-list li:last-child { border-bottom: none; }
+        .info-list .bullet { width: 24px; height: 24px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+        .contact-bar { background: linear-gradient(135deg, var(--dark) 0%, #1e293b 100%); border-radius: 20px; padding: 20px; text-align: center; color: white; margin-bottom: 16px; }
+        .contact-bar h3 { font-size: 16px; font-weight: 800; margin-bottom: 12px; }
+        .phone-numbers { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+        .phone-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 10px 20px; border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 14px; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        .phone-btn:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
+        .location-box { background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%); border-radius: 16px; padding: 16px; text-align: center; border: 1px solid var(--accent-light); }
+        .location-box .emoji { font-size: 24px; margin-bottom: 8px; }
+        .location-box p { font-size: 14px; color: #92400e; font-weight: 700; }
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--dark); color: white; padding: 14px 28px; border-radius: 16px; font-size: 14px; font-weight: 700; opacity: 0; transition: all 0.4s ease; z-index: 1000; box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .badge { display: inline-block; background: linear-gradient(135deg, var(--pink) 0%, #db2777 100%); color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; margin-right: 8px; }
+        .copy-btn { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 8px; }
+        .copy-btn:hover { background: var(--primary-dark); transform: scale(1.05); }
+        .copy-btn.copied { background: #16a34a; }
+        .success-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        .success-modal.active { display: flex; }
+        .success-content { background: white; border-radius: 24px; padding: 40px 24px; text-align: center; max-width: 400px; width: 100%; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .success-icon { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 40px; box-shadow: 0 8px 30px rgba(34, 197, 94, 0.4); }
+        .success-content h2 { color: var(--dark); font-size: 22px; font-weight: 900; margin-bottom: 12px; }
+        .success-content p { color: #64748b; font-size: 14px; margin-bottom: 20px; line-height: 1.6; }
+        .success-btn { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; padding: 14px 32px; border-radius: 12px; font-size: 16px; font-weight: 800; cursor: pointer; transition: all 0.3s; }
+        .success-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4); }
+        .server-status { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; border: 1px solid #bbf7d0; display: flex; align-items: center; gap: 10px; }
+        .server-status .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .server-status span { font-size: 13px; color: var(--primary-dark); font-weight: 700; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://i.imgur.com/placeholder-logo.png" alt="Banner Imprint Logo" class="logo-img" id="logoImg">
+            <h1>طباعة اللوحات الإعلانية</h1>
+            <p>لوحات الأعراس - البنر - الفلكس - القماش - اللاصق</p>
+        </div>
+
+        <div class="server-status" id="serverStatus">
+            <div class="status-dot"></div>
+            <span id="serverUrlDisplay">جاري الاتصال بالخادم...</span>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <div class="icon" style="background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);">🖨️</div>
+                خدماتنا
+            </div>
+            <div class="services-grid">
+                <div class="service-item"><span class="emoji">📢</span><span>بنر Banner</span></div>
+                <div class="service-item"><span class="emoji">🎭</span><span>فلكس Flex</span></div>
+                <div class="service-item"><span class="emoji">🧵</span><span>قماش Fabric</span></div>
+                <div class="service-item"><span class="emoji">🏷️</span><span>لاصق Sticker</span></div>
+            </div>
+            <div class="info-section" style="margin-bottom: 0;">
+                <h3>🎯 كيف يعمل؟</h3>
+                <ul class="info-list">
+                    <li><div class="bullet">1</div>ارفع صورة العريس بدقة عالية</li>
+                    <li><div class="bullet">2</div>سجل رقم هاتفك للتواصل</li>
+                    <li><div class="bullet">3</div>ادفع العربون 3000 ريال على محفظة جيب</li>
+                    <li><div class="bullet">4</div>نحن نصمم ونطبع ونوصل!</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <div class="icon" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);">📤</div>
+                رفع صورة العريس
+                <span class="badge">مطلوب</span>
+            </div>
+            <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                <span class="upload-icon">📸</span>
+                <h3>اضغط هنا لرفع الصورة</h3>
+                <p>أو اسحب الصورة وأفلتها هنا</p>
+                <div class="file-types">JPG / PNG / WEBP - حتى 10MB</div>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)">
+            <div class="preview-container" id="previewContainer">
+                <img class="preview-img" id="previewImg" src="" alt="Preview">
+                <div class="preview-info">
+                    <span id="fileName">image.jpg</span>
+                    <button class="remove-file" onclick="removeFile()">❌ حذف</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <div class="icon" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);">📱</div>
+                رقم الهاتف للتواصل
+                <span class="badge">مطلوب</span>
+            </div>
+            <div class="form-group">
+                <label class="form-label">رقم الواتساب / الهاتف</label>
+                <input type="tel" class="form-input" id="phoneInput" placeholder="مثال: 777123456" maxlength="15">
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <div class="icon" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);">💰</div>
+                العربون
+                <span class="badge">مطلوب</span>
+            </div>
+            <div class="deposit-box">
+                <div class="deposit-amount">3,000 ريال</div>
+                <div class="deposit-label">عربون لتأكيد الطلب</div>
+                <div class="deposit-note">يتم خصم العربون من قيمة اللوحة النهائية<br>التصميم علينا والطباعة والتوصيل!</div>
+            </div>
+            <div class="wallet-info">
+                <div class="wallet-icon">📲</div>
+                <h4>محفظة جيب - Jaib Wallet</h4>
+                <div class="wallet-number" id="walletNumber">777885692</div>
+                <div class="wallet-name">اسم المحفظة: طباعة البنر</div>
+                <button class="copy-btn" id="copyBtn" onclick="copyWallet()">📋 نسخ الرقم</button>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">رقم عملية التحويل (للتأكيد)</label>
+                <input type="text" class="form-input" id="transactionId" placeholder="أدخل رقم العملية بعد التحويل">
+            </div>
+        </div>
+
+        <button class="submit-btn" id="submitBtn" onclick="submitOrder()">
+            <span>🚀</span>
+            <span>إرسال الطلب الآن</span>
+        </button>
+
+        <div class="contact-bar">
+            <h3>📞 للاستفسار والتواصل</h3>
+            <div class="phone-numbers">
+                <a href="tel:783904991" class="phone-btn"><span>📱</span> 783904991</a>
+                <a href="tel:777885692" class="phone-btn"><span>📱</span> 777885692</a>
+            </div>
+        </div>
+
+        <div class="location-box">
+            <div class="emoji">📍</div>
+            <p>صنعاء - تقاطع نقم والمشهد<br>خلف مطعم التل الأخضر</p>
+        </div>
+
+        <div style="text-align: center; padding: 20px; color: #94a3b8; font-size: 12px;">
+            <p>🎨 Banner Imprint - طباعة اللوحات الإعلانية</p>
+            <p style="margin-top: 4px;">جميع الحقوق محفوظة 2024</p>
+        </div>
+    </div>
+
+    <div class="success-modal" id="successModal">
+        <div class="success-content">
+            <div class="success-icon">✅</div>
+            <h2>تم إرسال الطلب بنجاح!</h2>
+            <p>تم استلام طلبك وصورة العريس. سنتواصل معك خلال دقائق على الواتساب لتأكيد التصميم.</p>
+            <button class="success-btn" onclick="closeModal()">حسناً، شكراً</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let SERVER_URL = "";
+        const API_ENDPOINT = "/api/order";
+
+        function detectServerUrl() {
+            const currentHost = window.location.origin;
+            if (currentHost.includes("onrender.com") || currentHost.includes("localhost")) {
+                SERVER_URL = currentHost;
+            } else {
+                SERVER_URL = "https://banner-imprint.onrender.com";
+            }
+            document.getElementById("serverUrlDisplay").textContent = "متصل بـ: " + SERVER_URL;
+        }
+        detectServerUrl();
+
+        let selectedFile = null;
+        const uploadArea = document.getElementById("uploadArea");
+        ["dragenter","dragover","dragleave","drop"].forEach(e => uploadArea.addEventListener(e, preventDefaults, false));
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+        ["dragenter","dragover"].forEach(e => uploadArea.addEventListener(e, () => uploadArea.classList.add("dragover"), false));
+        ["dragleave","drop"].forEach(e => uploadArea.addEventListener(e, () => uploadArea.classList.remove("dragover"), false));
+        uploadArea.addEventListener("drop", handleDrop, false);
+        function handleDrop(e) { const dt = e.dataTransfer; if (dt.files.length) handleFiles(dt.files[0]); }
+        function handleFileSelect(e) { if (e.target.files.length) handleFiles(e.target.files[0]); }
+        function handleFiles(file) {
+            if (!file.type.startsWith("image/")) { showToast("❌ يرجى اختيار ملف صورة فقط"); return; }
+            if (file.size > 10 * 1024 * 1024) { showToast("❌ حجم الصورة يجب أن يكون أقل من 10 ميجابايت"); return; }
+            selectedFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById("previewImg").src = e.target.result;
+                document.getElementById("fileName").textContent = file.name + " (" + (file.size/1024/1024).toFixed(2) + " MB)";
+                document.getElementById("previewContainer").classList.add("active");
+                showToast("✅ تم رفع الصورة بنجاح");
+            };
+            reader.readAsDataURL(file);
+        }
+        function removeFile() {
+            selectedFile = null;
+            document.getElementById("fileInput").value = "";
+            document.getElementById("previewContainer").classList.remove("active");
+            document.getElementById("previewImg").src = "";
+            showToast("🗑️ تم حذف الصورة");
+        }
+        function copyWallet() {
+            const number = document.getElementById("walletNumber").textContent;
+            navigator.clipboard.writeText(number).then(() => {
+                const btn = document.getElementById("copyBtn");
+                btn.textContent = "✅ تم النسخ"; btn.classList.add("copied");
+                showToast("✅ تم نسخ رقم المحفظة");
+                setTimeout(() => { btn.textContent = "📋 نسخ الرقم"; btn.classList.remove("copied"); }, 2000);
+            }).catch(() => {
+                const ta = document.createElement("textarea"); ta.value = number;
+                document.body.appendChild(ta); ta.select(); document.execCommand("copy");
+                document.body.removeChild(ta); showToast("✅ تم نسخ رقم المحفظة");
+            });
+        }
+        async function submitOrder() {
+            const phone = document.getElementById("phoneInput").value.trim();
+            const transactionId = document.getElementById("transactionId").value.trim();
+            if (!selectedFile) { showToast("❌ يرجى رفع صورة العريس أولاً"); document.getElementById("uploadArea").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+            if (!phone || phone.length < 9) { showToast("❌ يرجى إدخال رقم هاتف صحيح"); document.getElementById("phoneInput").focus(); return; }
+            if (!transactionId) { showToast("❌ يرجى إدخال رقم عملية التحويل"); document.getElementById("transactionId").focus(); return; }
+            if (!SERVER_URL) { showToast("❌ لم يتم اكتشاف رابط الخادم"); return; }
+            const btn = document.getElementById("submitBtn");
+            btn.disabled = true; btn.innerHTML = "<span>⏳</span><span>جاري إرسال الطلب...</span>";
+            try {
+                const formData = new FormData();
+                formData.append("image", selectedFile);
+                formData.append("phone", phone);
+                formData.append("transaction_id", transactionId);
+                const response = await fetch(SERVER_URL + API_ENDPOINT, { method: "POST", body: formData });
+                const result = await response.json();
+                if (result.success) {
+                    document.getElementById("successModal").classList.add("active");
+                    const msg = "طلب جديد - طباعة لوحة\nرقم الهاتف: " + phone + "\nرقم العملية: " + transactionId + "\nالعربون: 3000 ريال (محفظة جيب)";
+                    window.open("https://wa.me/777885692?text=" + encodeURIComponent(msg), "_blank");
+                    selectedFile = null;
+                    document.getElementById("fileInput").value = "";
+                    document.getElementById("previewContainer").classList.remove("active");
+                    document.getElementById("phoneInput").value = "";
+                    document.getElementById("transactionId").value = "";
+                } else { showToast("❌ " + (result.error || "حدث خطأ أثناء الإرسال")); }
+            } catch (error) {
+                console.error(error);
+                showToast("❌ لا يمكن الاتصال بالخادم. جاري إرسال تفاصيل الطلب عبر واتساب...");
+                const msg = "طلب جديد - طباعة لوحة\nرقم الهاتف: " + phone + "\nرقم العملية: " + transactionId + "\nالعربون: 3000 ريال (محفظة جيب)\nملاحظة: لم يتم رفع الصورة للخادم";
+                window.open("https://wa.me/777885692?text=" + encodeURIComponent(msg), "_blank");
+            } finally {
+                btn.disabled = false; btn.innerHTML = "<span>🚀</span><span>إرسال الطلب الآن</span>";
+            }
+        }
+        function closeModal() { document.getElementById("successModal").classList.remove("active"); }
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message; toast.classList.add("show");
+            setTimeout(() => toast.classList.remove("show"), 3000);
+        }
+        document.getElementById("phoneInput").addEventListener("input", function(e) { this.value = this.value.replace(/[^0-9]/g, ""); });
+    </script>
+</body>
+</html>
